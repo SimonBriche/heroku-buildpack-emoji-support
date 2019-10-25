@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+function indent() {
+	c='s/^/       /'
+	case $(uname) in
+		Darwin) sed -l "$c";;
+		*)      sed -u "$c";;
+	esac
+}
+
+BUILD_DIR="$1"
+SOURCE_DIR="$(dirname $0)/../fonts.tar.gz"
+TARGET_DIR="$BUILD_DIR/.fonts"
+FONTCONFIG_SOURCE_DIR="$(dirname $0)/../fontconfig/."
+FONTCONFIG_TARGET_DIR="$BUILD_DIR/.config/fontconfig/conf.d/"
+
+echo "-----> Extracting fonts to $TARGET_DIR"
+
+mkdir -p "$TARGET_DIR"
+tar -xvzf "$SOURCE_DIR" -C "$TARGET_DIR" | indent
+
+echo "-----> Extracting fontconfig to $FONTCONFIG_TARGET_DIR"
+mkdir -p "$FONTCONFIG_TARGET_DIR"
+cp -a "$FONTCONFIG_SOURCE_DIR" "$FONTCONFIG_TARGET_DIR" | indent
+
+fc-cache -fv
